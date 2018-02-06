@@ -1,11 +1,10 @@
-// import mongoose
 const mongoose = require('mongoose');
-// import PostSchema
 const PostSchema = require('./post');
 
 const Schema = mongoose.Schema;
 
-// define schema for User
+/*************** DEFINE SCHEMA FOR USER ******************/
+
 const UserSchema = new Schema({
     name: {
         type: String,
@@ -15,7 +14,7 @@ const UserSchema = new Schema({
         ],
         required: [true, 'Name is required.']
     },
-    posts: [PostSchema],
+    posts: [PostSchema],    // embed, don't have own collection -> subdocument
     likes: Number,
     blogPosts: [{
         type: Schema.Types.ObjectId,
@@ -23,22 +22,27 @@ const UserSchema = new Schema({
     }]
 });
 
-// define virtual property
+/*************** DEFINE VIRTUAL PROPERTIES ON SCHEMA ******************/
+
 UserSchema.virtual('postCount').get(function () {
     // this === user object
     return this.posts.length;
 });
 
-// add middleware to run before the 'remove' event of user schema
-UserSchema.pre('remove', function (next) {
-    const BlogPost = mongoose.model('blogPost');        // retrieve model for blogPosts property of user object
-    // this === user object
+/*************** ADD MIDDLEWARE TO SCHEMA ******************/
 
-    BlogPost.remove({ _id: { $in: this.blogPosts } })  // remove all BlogPosts if their _ids are in user.blogPosts array
-        .then(() => next());        // next() - asynchronous call
+// call this middleware before user instance will be removed from database
+UserSchema.pre('remove', function (next) {
+    // retrieve model for blogPosts property of user object
+    const BlogPost = mongoose.model('blogPost');
+
+    // remove all BlogPosts if their _ids are in user.blogPosts array
+    BlogPost.remove({ _id: { $in: this.blogPosts } })
+        .then(() => next());        // next() - continue on middleware chain
 });
 
-// create User model
+/*************** CREATE USER MODEL ******************/
+
 const User = mongoose.model('user', UserSchema);
 
 // export User model

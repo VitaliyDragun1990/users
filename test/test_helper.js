@@ -4,21 +4,26 @@ const mongoose = require('mongoose');
 // define promise instead of mongoose's deprecated one
 mongoose.Promise = global.Promise;
 
-// callback before all tests start
+/********************** BEFORE ALL TEST ARE STARTED ***********************/
+
 before((done) => {
 // open connection to db
     mongoose.connect('mongodb://localhost/users_test', { useMongoClient: true });
 // check if connection is success
     mongoose.connection
-        .once('open', () => { done(); })
+        .once('open', () => {
+            done();
+        })
         .on('error', (error) => {
             console.warn('Warning', error);
         });
 });
 
-// callback method before each test - drop all collections in database
+/********************** BEFORE EACH TEST ***********************/
+
+// drop all collections in database
 beforeEach((done) => {
-    const  { users, comments, blogposts } = mongoose.connection.collections;
+    const { users, comments, blogposts } = mongoose.connection.collections;
     users.drop(() => {
         comments.drop(() => {
             blogposts.drop(() => {
@@ -34,7 +39,8 @@ beforeEach((done) => {
     // Promise.all(promises).then(() => done());
 });
 
-// callback after all tests end
+/********************** AFTER ALL TESTS ARE DONE ***********************/
+
 after('close db connection', () => {
     mongoose.disconnect();
 });

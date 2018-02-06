@@ -49,7 +49,7 @@ describe('Updating records', () => {
             done);
     });
 
-    it('A user can have their likes incremented by 1', (done) => {
+    it('A user can have their likes incremented by 10', (done) => {
         User.update({name: 'Joe'}, {$inc: {likes: 10}})   // find user with name 'Joe' and increment his likes
             .then(() => User.findOne({name: 'Joe'}))           // property by 10
             .then((user) => {

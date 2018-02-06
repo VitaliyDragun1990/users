@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+/*************** DEFINE BLOGPOST SCHEMA ******************/
+
 const BlogPostSchema = new Schema({
     title: String,
     content: String,
@@ -9,6 +11,8 @@ const BlogPostSchema = new Schema({
         ref: 'comment'
     }]
 });
+
+/*************** CREATE BLOGPOST MODEL ******************/
 
 const BlogPost = mongoose.model('blogPost', BlogPostSchema);
 
